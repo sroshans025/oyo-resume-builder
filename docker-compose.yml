@@ -1,0 +1,60 @@
+# Full stack: PostgreSQL, Redis, Django API, Celery worker + beat, nginx-served SPA.
+#   cp backend/.env.example backend/.env   (set DJANGO_SECRET_KEY, optionally AI settings)
+#   docker compose up --build
+# Then open http://localhost:8080 . For production put TLS in front of "web".
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: infyro
+      POSTGRES_USER: infyro
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-infyro-dev-password}
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U infyro"]
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+
+  api:
+    build: ./backend
+    env_file: ./backend/.env
+    environment: &backend-env
+      DATABASE_URL: postgres://infyro:${POSTGRES_PASSWORD:-infyro-dev-password}@db:5432/infyro
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/1
+      CELERY_TASK_ALWAYS_EAGER: "0"
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,api
+      DJANGO_CSRF_TRUSTED_ORIGINS: http://localhost:8080
+      FRONTEND_URL: http://localhost:8080
+      PRIVATE_MEDIA_ROOT: /data/private_media
+    volumes: [media:/data/private_media]
+    depends_on:
+      db: { condition: service_healthy }
+      redis: { condition: service_started }
+
+  worker:
+    build: ./backend
+    env_file: ./backend/.env
+    environment: *backend-env
+    command: celery -A infyro worker --loglevel=INFO --concurrency=2
+    volumes: [media:/data/private_media]
+    depends_on: [api]
+
+  beat:
+    build: ./backend
+    env_file: ./backend/.env
+    environment: *backend-env
+    command: celery -A infyro beat --loglevel=INFO
+    depends_on: [api]
+
+  web:
+    build: ./frontend
+    ports: ["8080:80"]
+    depends_on: [api]
+
+volumes:
+  pgdata:
+  media:

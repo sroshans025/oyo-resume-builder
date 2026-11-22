@@ -1,0 +1,162 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---------------------------------------------------------------------------
+   Infyro design tokens
+   Brand blue is sampled from the supplied Infyro mark (#1f7fef); ink from the
+   wordmark (#0b1220). Semantic tokens switch between light and dark themes.
+--------------------------------------------------------------------------- */
+:root {
+  --bg: #f6f8fc;
+  --bg-subtle: #eef2f8;
+  --surface: #ffffff;
+  --surface-2: #f8fafd;
+  --surface-3: #f1f5fb;
+  --border: #e3e8f1;
+  --border-strong: #cfd7e4;
+  --fg: #0b1220;
+  --fg-2: #334155;
+  --muted: #5b6677;
+  --faint: #8a94a6;
+  --ring: #1f7fef;
+  --brand-soft: #e8f1fe;
+  --brand-fg: #1462c4;
+  --overlay: rgb(11 18 32 / 0.45);
+  --shadow-color: 220 40% 20%;
+  --grid-line: rgb(15 23 42 / 0.05);
+  color-scheme: light;
+}
+
+.dark {
+  --bg: #070b14;
+  --bg-subtle: #0b111d;
+  --surface: #0e1522;
+  --surface-2: #121a29;
+  --surface-3: #172032;
+  --border: #1f2a3d;
+  --border-strong: #2b3850;
+  --fg: #eef2f9;
+  --fg-2: #c7d0de;
+  --muted: #94a0b4;
+  --faint: #6b778c;
+  --ring: #5aa2ff;
+  --brand-soft: #0f2442;
+  --brand-fg: #7cb5ff;
+  --overlay: rgb(2 6 14 / 0.7);
+  --shadow-color: 222 60% 2%;
+  --grid-line: rgb(148 163 184 / 0.06);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-subtle: var(--bg-subtle);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-line: var(--border);
+  --color-line-strong: var(--border-strong);
+  --color-fg: var(--fg);
+  --color-fg-2: var(--fg-2);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-fg: var(--brand-fg);
+}
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+
+  --color-brand-50: #eef5ff;
+  --color-brand-100: #d9e8fe;
+  --color-brand-200: #b8d5fd;
+  --color-brand-300: #8bbafb;
+  --color-brand-400: #5a9bf6;
+  --color-brand-500: #1f7fef;
+  --color-brand-600: #1668d4;
+  --color-brand-700: #1453ab;
+  --color-brand-800: #15468a;
+  --color-brand-900: #163c71;
+  --color-ink: #0b1220;
+  --color-violet-accent: #7a5cff;
+  --color-success: #0e9f6e;
+  --color-warning: #d48806;
+  --color-danger: #dc3545;
+
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+
+  --shadow-xs: 0 1px 2px hsl(var(--shadow-color) / 0.06);
+  --shadow-card: 0 1px 2px hsl(var(--shadow-color) / 0.05), 0 4px 16px -6px hsl(var(--shadow-color) / 0.08);
+  --shadow-lift: 0 2px 4px hsl(var(--shadow-color) / 0.06), 0 16px 40px -12px hsl(var(--shadow-color) / 0.18);
+  --shadow-glow: 0 0 0 1px rgb(31 127 239 / 0.12), 0 12px 40px -10px rgb(31 127 239 / 0.35);
+
+  --animate-fade-up: fade-up 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes shimmer {
+    from { background-position: -200% 0; }
+    to { background-position: 200% 0; }
+  }
+}
+
+@layer base {
+  html { -webkit-text-size-adjust: 100%; text-rendering: optimizeLegibility; }
+  body {
+    @apply bg-bg text-fg font-sans antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+  h1, h2, h3, h4 { @apply font-display tracking-tight text-fg; }
+  ::selection { background: rgb(31 127 239 / 0.22); }
+  :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: 6px; }
+  [hidden] { display: none !important; }
+  input, textarea, select, button { font: inherit; }
+}
+
+@layer components {
+  .card { @apply rounded-xl border border-line bg-surface shadow-[var(--shadow-card)]; }
+  .eyebrow { @apply text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-fg; }
+  .muted { @apply text-muted; }
+  .skeleton {
+    background: linear-gradient(90deg, var(--surface-3) 25%, var(--bg-subtle) 37%, var(--surface-3) 63%);
+    background-size: 400% 100%;
+    @apply animate-shimmer rounded-md;
+  }
+  .bg-grid {
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+  .text-gradient {
+    background: linear-gradient(100deg, #1f7fef 0%, #5a6cff 55%, #7a5cff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .scrollbar-thin { scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media print {
+  body { background: #fff !important; }
+  .no-print { display: none !important; }
+}

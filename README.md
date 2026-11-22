@@ -225,5 +225,3 @@ e2e/smoke_test.py    Playwright journey test
 docs/                architecture, API, deployment, openapi.yaml
 brand/               supplied logo + derived transparent variants
 ```
-#   o y o - r e s u m e - b u i l d e r  
- 
